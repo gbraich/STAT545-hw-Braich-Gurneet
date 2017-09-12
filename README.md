@@ -11,7 +11,7 @@ My primary research interests are in the areas of agriculture and food security,
 I used to work for a government agency, focused on providing [funding for agriculture and food issues](http://albertainnovates.ca/ "Alberta Innovates").  My time working for this organization gave me an interesting perpective on how climate change adaptation is already on-going from a plant breeding and agronomy perspective as well as in biological greenhouse gas management of livestock.
 
 ***
-#####The Move
+##### The Move
 
 ***How am I liking Vancouver?***
 
