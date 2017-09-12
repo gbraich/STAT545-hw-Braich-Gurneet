@@ -2,7 +2,7 @@
 ***
 
 ### About Me 
-I am a first year PhD student at the Institute of Resources, Environment and Sustainability.  I've spent the last four years living and working in Edmonton, Alberta. I am originally from Calgary.
+I am a first year PhD student at the Institute of Resources, Environment and Sustainability.  I've spent the last four years living and working in Edmonton, Alberta. I am originally from Calgary.  I enjoy travelling, outdoor activities, gardening and reading. I have recently taken up powerlifting.
 
 ***
 ### Research Interests
