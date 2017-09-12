@@ -31,3 +31,9 @@ Things I have not enjoyed thus far about Vancouver
 * Traffic and congestion
 * **Rain** and humidity
 
+***
+### The Process
+
+* Edits were made by using version control to clone an existing Git repository
+*Edits were made locally using R-Studio
+*All edits were saved, committed using the Git tab, pulled to make sure the
