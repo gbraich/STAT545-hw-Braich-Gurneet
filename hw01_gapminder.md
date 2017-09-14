@@ -163,13 +163,13 @@
 ![](hw01_gapminder_files/figure-markdown_strict/unnamed-chunk-23-1.png)
 
     p <- ggplot(filter(gapminder, continent != "Oceania"),
-                aes(x = gdpPercap, y = lifeExp)) # just initializes
-    p <- p + scale_x_log10() # log the x axis the right way
-    p + geom_point() # scatterplot
+                aes(x = gdpPercap, y = lifeExp))
+    p <- p + scale_x_log10() 
+    p + geom_point() 
 
 ![](hw01_gapminder_files/figure-markdown_strict/unnamed-chunk-24-1.png)
 
-    p + geom_point(aes(color = continent)) # map continent to color
+    p + geom_point(aes(color = continent)) 
 
 ![](hw01_gapminder_files/figure-markdown_strict/unnamed-chunk-24-2.png)
 
