@@ -34,6 +34,9 @@ Things I have not enjoyed thus far about Vancouver
 ***
 ### The Process
 
-* Edits were made by using version control to clone an existing Git repository
-*Edits were made locally using R-Studio
-*All edits were saved, committed using the Git tab, pulled to make sure the
+* Edits were made by using version control to clone an existing Git repository that was created for this homework assignment
+* Edits were made locally using R-Studio
+* All edits were saved, committed using the Git tab, a git pull was performed to make sure everything was up-to-date and then pushed to github.com
+* Writing the text was easy in R-Studio but getting familar with the syntax took a while
+* I found it helpful to use the following website that was listed on the Stat545 page (https://daringfireball.net/projects/markdown/syntax#p)
+* I found some disprepancies between what the html looked like in preview vs. on Github
