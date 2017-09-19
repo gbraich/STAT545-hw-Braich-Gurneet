@@ -1,4 +1,4 @@
-# Welcome to Ginni's Page for Stat454
+# Welcome to Ginni's Page for Stat545
 ***
 
 ### About Me 
