@@ -41,4 +41,5 @@ Things I have not enjoyed thus far about Vancouver
 * I found R Markdown fun to work with after getting used to the keyboard shortcuts to bring up the '''r{} function
 * I really enjoyed working the Gapminder dataset, especially changing x and y axis variables to see how correlated different socio-economic indicators are, as well as looking at the data by grouping by continent
 * Gapminder [md file](https://github.com/gbraich/STAT545-hw01-Braich-Gurneet/blob/master/hw01_gapminder.md)
-* Hw02 Readme
+* Hw02 [README](STAT545-hw-Braich-Gurneet/hw02/README.md)
+
