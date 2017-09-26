@@ -1,0 +1,212 @@
+---
+title: "Gapminder analysis"
+author: "Gb"
+date: '2017-09-19'
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document: default
+---
+
+```{r}
+library(gapminder)
+```
+
+```{r}
+library(tidyverse)
+```
+```{r}
+class(gapminder)
+```
+####Questions about gapminder
+#####gapminder is a data.frame
+#####gapminder is a tibble
+```{r}
+str(gapminder)
+```
+#####gapminder has 6 variables/columns
+#####gapminder has 1704 rows/observations
+#####facts about extent and size can be gather in more than one way.  If you want to have a quick glimpse about the dataset than str() is a useful function.  If you want to know specifically about columns, names of variables or look at the top of the bottom of the dataset than fuctions like ncol(), names(), length(), dim(), nrow(), head() or tail() could be useful
+#####Data type of variables: country and continent are factors, year and population are integers and lifeExp and gdpPercap are numerical
+***
+####Exploring individual variables
+#####Categorical data= continent, quantitative data= gdpPercapita
+#####Values and range of each variable explored using summary, table, barplots and histograms
+
+```{r}
+summary(gapminder$continent)
+```
+```{r}
+table(gapminder$continent)
+```
+```{r}
+barplot(table(gapminder$continent))
+```
+
+#####For the continents variable, the number of countries in each continent varies from over 600+ in Africa to less than 30 in Oceania. This is also illustrated using a barplot.
+ 
+
+```{r}
+summary(gapminder$lifeExp)
+```
+```{r}
+table(gapminder$lifeExp)
+```
+```{r}
+hist(gapminder$lifeExp)
+```
+
+#####For the life expectancy variable, the median is around 60 and the mean is 59 (using the summary function).  The maximum is 82 and the minimum is 27.  The spread is shown using the table and histogram, with higher frequency in the 40-80 year life expectancy range
+
+***
+####Explore various plot types
+#####Scatterplot of two quantitative variables (lifeExp and gdpPerCapita)
+
+```{r}
+p <- ggplot(gapminder, aes(x=log10(gdpPercap), y=lifeExp))
+p + geom_point (aes(colour=continent), alpha=0.5)
+```
+
+***
+####Plot of one quantitative variable
+#####Densityplot of gdpPercap
+
+```{r}
+ggplot (gapminder, aes(x=log10(gdpPercap))) + geom_density()
+```
+
+#####add colours for different continents
+
+```{r}
+ggplot (gapminder, aes(x=log10(gdpPercap), colour=continent)) + geom_density()
+```
+
+#####Removed Oceania because it had very few datapoints
+
+```{r}
+ggplot (subset(gapminder, continent!= "Oceania"), aes(x=log10(gdpPercap), colour=continent)) + geom_density()
+```
+
+#####Experimented with facet wrap and transparency as demonstrated in Jenny's ggplot tutorial
+#####https://github.com/jennybc/ggplot2-tutorial/blob/master/gapminder-ggplot2-univariate-quantitative.md
+
+```{r}
+ggplot (subset(gapminder, continent!= "Oceania"), aes(x=log10(gdpPercap), fill=continent)) + geom_density(alpha=0.2)
+```
+```{r}
+ggplot(gapminder, aes(x=log10(gdpPercap))) + geom_density() + facet_wrap(~ continent)
+```
+
+***
+####Plot one quantitative variable and one categorical
+#####Boxplot of European countries' gdpPercap by year
+
+```{r}
+ggplot (subset(gapminder, continent == "Europe"), aes(x=year, y=gdpPercap)) + geom_boxplot(aes(group=year))
+```
+
+***
+####Boxplot of Canada and the Ireland using piping together of filter and select
+#####To keep my code tidy, I assigned my piped data to the variable z.  I filtered by Canada and Ireland and selected the data on the country name, year and gdpPercap.  I then tested for z to make sure all the data I wanted was there
+
+```{r}
+z= gapminder %>% 
+  filter(country %in% c("Canada", "Ireland")) %>% 
+  select (country, year, gdpPercap)
+```
+```{r}
+z
+```
+
+#####I assigned the z variable as my dataset when using ggplot and examined the change of the two countries' gdpPercap by year.  I assigned the variable p as my ggplot x and y data. To make it look more informative I assigned different colours for the two countries and included a line of best fit.  I used the geom_point and geom_smooth functions for the colours and line of best fit, and also utilized the resources from Jenny's [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial/blob/master/gapminder-ggplot2-scatterplot.md)
+
+```{r}
+p <- ggplot (z, aes(x=year, y=gdpPercap))
+```
+```{r}
+p+ geom_point()
+```
+
+```{r}
+p + geom_point(aes(colour = country))
+```
+```{r}
+p + aes(colour = country) + geom_point() + geom_smooth(lwd= 2, se= FALSE)
+```
+
+***
+###But I want to do more!
+#####Afghanistan and Rwanda exercise
+
+```{r}
+filter(gapminder, country == c("Rwanda", "Afghanistan"))
+```
+
+#####It appears the code is correct.  The filtered gapminder data describes all the data in the dataset for Afghanistan and Rwanda.
+
+***
+####Utilizing more dplyr functions
+#####To utilize and learn more about dplyr functions I asked the following question and tried to work backward to find the data: What country experienced the sharpest 5-year increase in population?
+######First I created a copy of gapminder so I could make changes to the tibble without effecting the data in the package
+```{r}
+edit_gap <- gapminder
+```
+```{r}
+edit_gap
+```
+
+#####Next I wanted select only the variables I am interested in using the group by function for continent and country.  At each step I am assigning a new variable (s1, s2 etc) to make it easy to follow along
+
+```{r}
+s1<- edit_gap %>%
+  select (country, year, continent, pop) %>% 
+  group_by(continent, country)
+```
+
+```{r}
+s1
+```
+
+
+#####Next I want to use mutate to make a new data point which will tell me how pop changed by year ((pop in year i)- (pop in year i - 1). This will mean that positive numbers will indicate that the population went up.  I am using the lag function which finds the change based on the datapoint before the point in question (eg. x - (x-1))
+
+```{r}
+s2<- s1 %>% 
+  mutate(pop_delta = pop -lag(pop))
+```
+
+```{r}
+s2
+```
+
+
+#####Next I want to retain the best pop change, which means the biggest value that is positive. For this I use the summarize function and the max function.  To exclude any missing numbers from the analysis I am using "na.rm= TRUE"
+
+```{r}
+s3 <- s2 %>% 
+  summarize(best_pop_delta = max(pop_delta, na.rm = TRUE))
+```
+
+```{r}
+s3
+```
+
+#####Arrange in descending order
+
+```{r}
+s3 %>% 
+  arrange (desc(best_pop_delta))
+```
+
+##### From this table I can see that the highest population growths from the gapminder data set.  The largest is China which grew over a 107M people in a span of five years. The top four are from Asia.  If I wanted to see the highest pop growth by continent I would first use filter and min rank to select the top entry of each group, which is convieniently put together in the function top n.  This lets you select for the top n rows and you assign the wt as being the newly created variable best_pop_delta
+
+```{r}
+s3 %>%
+  top_n(1, wt = best_pop_delta) %>% 
+  arrange (desc(best_pop_delta))
+```
+
+##### From this you can see the sharpest population increases in the other continents, with the smallest occuring in Australia which is in Oceania.  
+#####I really enjoyed this exercise, a modified version of which is in the [dplyr functions in a single dataset](http://stat545.com/block010_dplyr-end-single-table.html#grand-finale) on the stats 545 website
+
+
