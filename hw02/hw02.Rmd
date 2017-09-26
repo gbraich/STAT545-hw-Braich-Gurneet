@@ -18,14 +18,14 @@ library(tidyverse)
 ```{r}
 class(gapminder)
 ```
-Questions about gapminder
-gapminder is a data.frame
-gapminder is a tibble
+# *Questions about gapminder*
+# gapminder is a data.frame
+# gapminder is a tibble
 ```{r}
 str(gapminder)
 ```
-#gapminder has 6 variables/columns
-#gapminder has 1704 rows/observations
+gapminder has 6 variables/columns
+gapminder has 1704 rows/observations
 #facts about extent and size can be gather in more than one way.  If you want to have a quick glimpse about the dataset than str() is a useful function.  If you want to know specifically about columns, names of variables or look at the top of the bottom of the dataset than fuctions like ncol(), names(), length(), dim(), nrow(), head() or tail() could be useful
 #Data type of variables: country and continent are factors, year and population are integers and lifeExp and gdpPercap are numerical
 ***
