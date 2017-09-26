@@ -105,7 +105,7 @@ ggplot (subset(gapminder, continent == "Europe"), aes(x=year, y=gdpPercap)) + ge
 ```
 
 ***
-#### Boxplot of Canada and the Ireland using piping together of filter and select
+#### Scatterplot of Canada and the Ireland using piping together of filter and select
 ##### To keep my code tidy, I assigned my piped data to the variable z.  I filtered by Canada and Ireland and selected the data on the country name, year and gdpPercap.  I then tested for z to make sure all the data I wanted was there
 
 ```{r}
@@ -117,7 +117,7 @@ z= gapminder %>%
 z
 ```
 
-##### I assigned the z variable as my dataset when using ggplot and examined the change of the two countries' gdpPercap by year.  I assigned the variable p as my ggplot x and y data. To make it look more informative I assigned different colours for the two countries and included a line of best fit.  I used the geom_point and geom_smooth functions for the colours and line of best fit, and also utilized the resources from Jenny's [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial/blob/master/gapminder-ggplot2-scatterplot.md)
+##### I assigned the z variable as my dataset when using ggplot and examined the change of the two countries' gdpPercap by year.  I assigned the variable p as my ggplot x and y data. To make it look more informative I assigned different colours for the two countries and included a line of best fit.  I used the geom_point function to add coloured points and the geom_smooth to add a line of best fit (with no error bars), and also utilized the resources from Jenny's [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial/blob/master/gapminder-ggplot2-scatterplot.md)
 
 ```{r}
 p <- ggplot (z, aes(x=year, y=gdpPercap))
@@ -130,7 +130,7 @@ p+ geom_point()
 p + geom_point(aes(colour = country))
 ```
 ```{r}
-p + aes(colour = country) + geom_point() + geom_smooth(lwd= 2, se= FALSE)
+p + aes(colour = country) + geom_point() + geom_smooth(se= FALSE)
 ```
 
 ***
@@ -141,7 +141,13 @@ p + aes(colour = country) + geom_point() + geom_smooth(lwd= 2, se= FALSE)
 filter(gapminder, country == c("Rwanda", "Afghanistan"))
 ```
 
-##### It appears the code is correct, but if you look closer there are five year intervals missing from both datasets eg. Afghanistan has data for 1957 but not 1962, or 1972 etc.  The reason for this is that there are not using the "country" %in% "function which finds all instances in the datasets where the data includes Rwanada and Afghanistan.  Using the filter function only for Afghanistan and Rwanda filters rows based on the couuntry and ends up alternating between Rwanada and Afghanistan for each year.
+##### It appears the code is correct, but if you look closer there are five year intervals missing from both datasets eg. Afghanistan has data for 1957 but not 1962, or 1972 etc.  The reason for this is that there are not using the "country" %in% "function which finds all instances in the datasets where the data includes Rwanada and Afghanistan.  Using the filter function only for Afghanistan and Rwanda filters rows based on the country and ends up alternating between Rwanada and Afghanistan for each year. We can test this by using the same code but switching so Afghanistan is first.
+
+```{r}
+filter(gapminder, country == c("Afghanistan", "Rwanda"))
+```
+
+##### Indeed we see that the same thing happens where the filter function alternates selecting for the two countries, this time starting with Afghanistan in 1952, then Rwanada 1957 etc.  Using the %in% function as I mentioned above will retrieve all the data we need.
 
 ```{r}
 filter(gapminder,country %in% c("Afghanistan", "Rwanda"))
@@ -202,15 +208,18 @@ s3 %>%
   arrange (desc(best_pop_delta))
 ```
 
-##### From this table I can see that the highest population growths from the gapminder data set.  The largest is China which grew over a 107M people in a span of five years. The top four are from Asia.  If I wanted to see the highest pop growth by continent I would first use filter and min rank to select the top entry of each group, which is convieniently put together in the function top n.  This lets you select for the top n rows and you assign the wt as being the newly created variable best_pop_delta
+##### From this table I can see that the highest population growths from the gapminder data set.  The largest is China which grew over a 107M people in a span of five years. The top four are from Asia.  If I wanted to see the highest pop growth by continent I would first use filter and max rank to select the top entry of each group, which is convieniently put together in the function top n.  This lets you select for the top n rows and you assign the wt as being the newly created variable best_pop_delta.  As we have already grouped by continent earlier it follows here.
 
 ```{r}
-s3 %>%
+s4 <- s3 %>%
   top_n(1, wt = best_pop_delta) %>% 
   arrange (desc(best_pop_delta))
 ```
+```{r}
+s4
+```
 
-##### From this you can see the sharpest population increases in the other continents, with the smallest occuring in Australia which is in Oceania.  
+##### From this you can see the highest population increases in the other continents, with the smallest occuring in Australia which is in Oceania.  In their best 5 year stretch, Australia added 1.3M to it's population total.
 ##### I really enjoyed this exercise, a modified version of which is in the [dplyr functions in a single dataset](http://stat545.com/block010_dplyr-end-single-table.html#grand-finale) on the stats 545 website
 
 
