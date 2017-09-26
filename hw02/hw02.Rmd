@@ -56,11 +56,11 @@ table(gapminder$lifeExp)
 hist(gapminder$lifeExp)
 ```
 
-#####For the life expectancy variable, the median is around 60 and the mean is 59 (using the summary function).  The maximum is 82 and the minimum is 27.  The spread is shown using the table and histogram, with higher frequency in the 40-80 year life expectancy range
+##### For the life expectancy variable, the median is around 60 and the mean is 59 (using the summary function).  The maximum is 82 and the minimum is 27.  The spread is shown using the table and histogram, with higher frequency in the 40-80 year life expectancy range
 
 ***
-####Explore various plot types
-#####Scatterplot of two quantitative variables (lifeExp and gdpPerCapita)
+#### Explore various plot types
+##### Scatterplot of two quantitative variables (lifeExp and gdpPerCapita)
 
 ```{r}
 p <- ggplot(gapminder, aes(x=log10(gdpPercap), y=lifeExp))
