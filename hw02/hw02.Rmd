@@ -18,9 +18,9 @@ library(tidyverse)
 ```{r}
 class(gapminder)
 ```
-####Questions about gapminder
-#####gapminder is a data.frame
-#####gapminder is a tibble
+#Questions about gapminder
+#gapminder is a data.frame
+#gapminder is a tibble
 ```{r}
 str(gapminder)
 ```
