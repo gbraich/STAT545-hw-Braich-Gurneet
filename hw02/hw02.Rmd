@@ -87,7 +87,7 @@ ggplot (gapminder, aes(x=log10(gdpPercap), colour=continent)) + geom_density()
 ggplot (subset(gapminder, continent!= "Oceania"), aes(x=log10(gdpPercap), colour=continent)) + geom_density()
 ```
 
-##### Experimented with facet wrap and transparency as demonstrated in Jenny's [ggplot tutorial] (https://github.com/jennybc/ggplot2-tutorial/blob/master/gapminder-ggplot2-univariate-quantitative.md)
+##### Experimented with facet wrap and transparency as demonstrated in Jenny's [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial/blob/master/gapminder-ggplot2-univariate-quantitative.md)
 
 ```{r}
 ggplot (subset(gapminder, continent!= "Oceania"), aes(x=log10(gdpPercap), fill=continent)) + geom_density(alpha=0.2)
