@@ -1,0 +1,239 @@
+---
+title: "Hw03"
+author: "Gb"
+date: '2017-10-02'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+title: "Hw03 Gapminder Analysis"
+author: "Gb"
+date: '2017-09-26'
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(gapminder)
+```
+```{r}
+library(knitr)
+```
+```{r}
+library(kableExtra)
+```
+
+***
+#### Tasks
+##### 1. Maximum and minimum of GDP per capita for all continents
+
+###### To solve this question we need to consider what needs to be done.  We want to use the gapminder dataset, we should get rid of the variables we are no longer interested in using the select function (keep only continent, country, year and gdpPercap). Through piping we should make it so that the data is arranged with respect to the variable we are interested in (gdpPercap).  We want to know the max and min for each continent so next we should specify that the data should be grouped by continents.  Lastly we want to specify that we are only interested in the top entry for each group (continent) using the top_n function, where the weight will be the descending gdpPercap so we can see the minimum gdp by continent.  If we were looking at the max we would use wt as simply gdpPercap
+
+###### For the tables generated I used knitr::kable and kableExtra to improve the appearance of my HTML tables.  I used the [cran website](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) and bootstrap theme and the following customizations: striped rows, hover (for a change in row colour when the mouse hovers) and condensed to make the row height shorter.
+```{r}
+min_gdp <- gapminder %>% 
+  select(continent, country, year, gdpPercap) %>% 
+  arrange(gdpPercap) %>% 
+  group_by(continent) %>% 
+  top_n(1, wt=desc(gdpPercap))
+```
+```{r}
+min_gdp%>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+###### Based on common sense we would expect that the minimum gdp by continent is likely early on the in the series (as there has been mostly positive economic growth over the decades) and we can see that for three out of the five continents the minimum gdpPercap is from the first year of data, 1952.  For the other two continents natural disasters and war can explain why the minimum gdpPercap experienced in Haiti and the DRC are more recent.
+
+```{r}
+min_gdp %>% 
+  ggplot(aes(x= continent, y=gdpPercap)) + geom_col()
+```
+
+
+
+```{r}
+max_gdp <- gapminder %>% 
+  select(continent, country, year, gdpPercap) %>% 
+  arrange(gdpPercap) %>% 
+  group_by(continent) %>% 
+  top_n(1, wt=gdpPercap)
+```
+```{r}
+max_gdp%>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+###### The maximum gdpPercap by continent reveals that three out of the five values are from the last year of data (2007) which is what we would expect based on a general trend of increased economic growth and gdp since this data begins in 1952. The two other countries recognized for thier maximum gdpPercap are Libya and Kuwait.  Both are oil states that experienced either a low population or a period of political stability which explain why their maximum gdpPercap were experienced further in the past.
+
+
+```{r}
+max_gdp %>% 
+  ggplot(aes(x= continent, y=gdpPercap)) + geom_col()
+```
+
+***
+#### 2. Look at the spread of GDP per capita within continents
+
+###### To look at the spread of GDP per capita we need to calculate for the statistics that tell us most about the spread of data.  These statistics are minimum, maximum, mean, median and standard deviation.  While these are easy to calculate for the whole dataset using the summary function and querying for gapminder$gdpPercapita, this does not show us the spread by continent.  In order to calculate the spread of gdp Per capita within continets we will use piping to group by continents, and then summarize for variables the we assigned for minimum, maximum, mean, median and standard deviation.  I have also included the count of the number of countries within each continent so we can see the amount of data used to calculate the spread. 
+
+###### From the table below we can see the greatest spread of gdp per capita is in Asia.  This is because it has the highest standard deviation, that is the highest amount of variability in the dataset.  A standard deviation of over 14,000 for Asia indicates that there is greater spread around the mean than, for example, Africa which only has a standard deviation of 2827.
+
+```{r}
+sp1<- gapminder %>% 
+  group_by(continent) %>% 
+  summarize( min_gdpPercap= min(gdpPercap), max_gdpPercap=max(gdpPercap), mean_gdpPercap= mean(gdpPercap), median_gdpPercap = median(gdpPercap), sd_gdpPercap= sd(gdpPercap), 
+             n_countries= length(gdpPercap))
+```
+```{r}
+sp1%>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+gapminder %>%
+  ggplot(aes(year, log10(gdpPercap), group=country)) + facet_wrap(~continent) + geom_line(aes(colour=continent))
+```
+
+###### Looking at the spaghetti plots we can see that the highest spread of gdp per capita occurs in Asia where there are countries at the extremes of high and low, although the general trend is toward increase gdp per capita over time.  In continents like the Americas and Europe there is less variance between countries in terms of gdp per capita (ie. all the countries lines are much closer and denser) and the trends for both are for increased gdp per capita over time.  We can also show this for each continent using a geom_smooth function to add a line of best fit
+
+```{r}
+gapminder %>%
+  ggplot(aes(year, log10(gdpPercap), group=country)) + facet_wrap(~continent) + geom_line(aes(colour=continent)) + geom_smooth(aes(group= continent), method= "lm", se = FALSE)
+```
+
+###### The slope of these lines of best fit indicate that the highest gdpPercapita growth can be seen in Asia, Europe and Oceania.
+
+***
+
+#### 3. Report the absolute and/or relative abundance of countries with low life expectancy over time by continent: Compute some measure of worldwide life expectancy. Then determine how many countries on each continent have a life expectancy less than this benchmark, for each year.
+
+###### Deciding on a measure for worldwide life expectancy: I decided on using the median for life expectancy as the benchmark. I think a median value is a great measure, and less affected by extremes in the data (of which there are many in this global dataset). To calculate the median life expectancy I decided to select for only the variables I am interested in (continent, country, year, life expectancy).  Then I used the mutate function to add a new variable, median life expectancy.
+
+```{r}
+s1<- gapminder %>%
+  select (continent, country, year, lifeExp) %>% 
+  mutate(median_LE= median(lifeExp))
+```
+
+```{r}
+head(s1)%>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+
+###### Based on this calculation, the median life expectancy for the global dataset is 60.71 years.
+
+###### Next I wanted find out how many countries on each continent had a life expectancy less than the benchmark for each year. I use the dataset I generated (s1) and group by continent and year because I want to know how many countries for each continent have a life expectancy less than the median by year. I then used the mutate function to create a new variable (Below_medLE) which the product of subtracting the median life expectancy from the life expectancy of each country by year.  Next I filtered only for the data points where Below_medLE was less than zero ie. the life expectancy in that country for that year was less than zero.  Finally I used summarize to count all the countries below the median life expectancy (n_countries_below_medLE) that would group by continent and year.
+
+```{r}
+s2 <- s1 %>% 
+  group_by(continent, year) %>% 
+  mutate (Below_medLE= lifeExp-median_LE) %>% 
+  filter (Below_medLE <= 0) %>% 
+  summarize(n_countries_below_medLE= length(Below_medLE))
+```
+```{r}
+head(s2)%>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+###### This table shows us the number of countries by continent by year that had life expectancies that were less than the benchmark of the median life expectancy of the dataset.
+
+###### Next we should plot this data using ggplot2.  We want how the continents did with regards to the number of countries under the benchmark overtime
+
+```{r}
+s2 %>%
+  ggplot(aes(x=year, y=n_countries_below_medLE)) + geom_point (aes(colour=continent)) + geom_line(aes(colour=continent))
+```
+
+###### From this plot we can see that there were only two continents remaining in 2007 with countries that had life expectancies less than the median of 60.71 years (Africa and Asia).  In 1952 all continents except Oceania had countries with life expectancies less than 60.71 years but these were reduced to zero by 1976 in Europe and 2002 in the Americas.
+***
+
+#### 4. How is life expectancy changing over time on different continents?
+
+###### To look at how life expectancy is changing over time on different continents I thought it would be best to construct a table that showed the mean life expectancy by continent by year.  I used the [following website](https://learningstatisticswithr.wordpress.com/2012/11/28/a-simple-way-to-calculate-group-means-in-r/) to learn about the aggregate function which was very useful for this problem!
+
+```{r}
+y1<- aggregate(formula=lifeExp~continent+year,
+            data=gapminder,
+            FUN=mean) %>% 
+  arrange(continent)
+```
+```{r}
+head(y1)%>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+###### While this shows us the mean life expectancy for each continent at each time point, we may be also interested in seeing how the life expectancy changes over time.  Using the lag() function we can see the change in life expectancy between time intervals.
+
+```{r}
+y1 %>% 
+  arrange(continent) %>% 
+  mutate(lifeExp_growth= lifeExp- lag(lifeExp)) %>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+###### From this table we can see the the life expectancy in Africa grew by an average of 2 extra years over each five year period until 1992 when this growth in life expectancy slowed down. The period from 1992-2007 saw uneven growth in life expectancy for the continent. The Americas saw the mean life expectancy growth by an extra year or two for each five year period up until 2007.Asia also saw healthy gains of 1-3 years since 1952. Europe, which started with a higher mean life expectancy, saw slower but positive growth over the years. This is the same for Oceania.
+
+
+###### To look at change in life expectancies over time I used boxplots because it was both a nice change from a spaghetti plot and also showed how the cohort of countries by continent changed every five years. We can see that the intrepretations we made from the table are visualized in the figure below.
+
+```{r}
+gapminder %>% 
+  ggplot (aes(year, lifeExp)) + facet_wrap(~continent) + geom_boxplot(aes(group=year, colour=continent))
+```
+
+###### To visualize the trends we can use geom_smooth to create a regressive line of best fit.  The figures below show that are interpretations of the table are correct.  There was growth of the average life expenctancy in Africa, but it slowed down since the 1990s. Asia shows the highest gain in mean life expectancy.  The Americas also had significant improvement in life expectancy.  Europe and Oceania also improved, but had higher life expectancies to begin with.
+
+```{r}
+gapminder %>% 
+  ggplot (aes(year, lifeExp)) + facet_wrap(~continent) + geom_boxplot(aes(group=year, colour=continent)) + geom_smooth(aes(group=continent))
+```
+
+***
+#### But I want to do more!
+
+##### 1. Layout stretch goal: get table and figure side-by-side
+
+###### To do this extra project I selected a table and figure from task #1 (figuring out the highest GDP per capita by continent.  I used echo=FALSE for the code for both the table and the figure so that it would hide the code in the resulting hmtl that has the table and plot next to each other. 
+
+###### Using [Jenny's example](https://gist.github.com/jennybc/e9e9aba6ba18c72cec26) that was posted on the Stats545 hw03 guide, I figured out that we would need to use CSS to help format and style how the figure and plot would look in HTML.  To have two objects next to each other we need to construct a grid, which I decided to call "area".  I made a wrapper for the figure and table I wanted to grid by using "div class"" to start it and "/div"" to end it.  After I wanted to specify what I wanted to happen in my grid called "area."  I specified the style type (css), specified that "area" was going to take up 100% of the width.  Then I specified that I wanted the table to take up 50% of the width and float right, and have the plot taken up 50% of the width and float left. I then ended the style prompt. I found  the following tutorials helpful to understand [css style](https://css-tricks.com/dont-overthink-it-grids/).  Doing this extra work has made me excited to learn more about CSS and using it for making HTML documents look better!
+
+<div class="area">
+```{r results='asis', echo=FALSE}
+knitr::kable(max_gdp)
+```
+
+```{r echo=FALSE}
+max_gdp %>% 
+  ggplot(aes(x= continent, y=gdpPercap)) + geom_col() + ggtitle("Maximum GDP per cap by continent")
+```
+</div>
+<style type="text/css">
+.area {width: 100%}
+.area .table {max-width: 50%; float: right}
+.area img {max-width: 50%; float: left}
+</style>
+
+
+
+
+
+
+
+
+
