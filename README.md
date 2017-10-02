@@ -42,4 +42,4 @@ Things I have not enjoyed thus far about Vancouver
 * I really enjoyed working the Gapminder dataset, especially changing x and y axis variables to see how correlated different socio-economic indicators are, as well as looking at the data by grouping by continent
 * Gapminder for hw01 [md file](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw01/hw01_gapminder.md)
 * Hw02 [README](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw02/README.md)
-
+* Hw03 [README](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw03/README.md)
