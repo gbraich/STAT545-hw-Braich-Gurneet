@@ -219,11 +219,8 @@ max_gdp %>%
   ggplot(aes(x= continent, y=gdpPercap)) + geom_col() + ggtitle("Maximum GDP per cap by continent")
 ```
 </div>
-</div>
-<div class="clearer"></div>
 <style type="text/css">
 .area {width: 100%}
-.clearer {clear: both}
 .area .table {max-width: 50%; float: right}
 .area img {max-width: 50%; float: left}
 </style>
