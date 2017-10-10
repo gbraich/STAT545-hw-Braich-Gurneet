@@ -1,0 +1,354 @@
+---
+title: "Hw04"
+author: "Gb"
+date: '2017-10-05'
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(gapminder)
+library(tidyverse)
+library(curl)
+library(rvest)
+library(xml2)
+```
+
+### For Homework 3: Choose your our own adventure
+
+I opted to do several tasks of both the reshaping and join prompts
+
+***
+### Reshaping and Aggregation
+#### Activity #1: Make your own cheatsheet
+
+In class we were taught that, generally, `gather` is for creating a long format of a dataframe and `spread` is for creating a wide format
+
+tidyr Function   | Change to Dataframe
+-----------------|----------------------------
+gather         | long format
+spread         | wide format
+
+<br>
+When you use the gather function it will look like so: data %>% gather(a, b, ...)
+<br>
+a= the name of the column headers that becomes a variable
+<br>
+b= name of stacked columns that becomes a variable
+<br>
+... = Items that are included or excluded from the reshape
+<br>
+<br>
+*Demos*
+<br>
+New Dataframe
+<br>
+Lets make a new dataframe which will show three different test scores of 5 individuals
+
+```{r}
+name = c("John", "Jim", "Jack", "Joe", "James")
+t1 = c(100, 98, 77, 65, 78)
+t2 = c(99, 83, 74, 100, 84)
+t3= c(62, 71, 93, 77, 80)
+df= data.frame(name, t1, t2, t3)
+```
+
+```{r}
+df %>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+ 
+*Gather*
+<br>
+We will use the gather function to make the data frame longer instead of wider and create two new columns called test and scores.  We will do so by excluding the variable we do not want gathered, in this case "nm"
+ 
+```{r}
+df %>% gather(test, scores, -c(name)) %>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+We can also use the gather function and tell it what variables we want to get gathered instead of which not to include like above
+
+```{r}
+df %>% gather(test, scores, t1:t3) %>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+*Spread*
+<br>
+To spread, we will use the spread function on our previously gathered data.  We can spread by indicating which columns we want to spread.  This will result in our original dataframe
+
+```{r}
+df %>% gather(test, scores, -c(name)) %>% 
+  spread(test, scores) %>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+***
+### Reshaping and Aggregation
+#### Activity 2: Make a tibble of one row per year and columns of life expectancy for two or more countries
+To do this we will need to use the filter function to filter only two countries of interest, the select function to select only the columns we are interested in and then use the spread function to make columns for the life expectancies of the two countries by year
+
+```{r}
+a2 <- gapminder %>% 
+  filter(country %in% c("Sweden","Denmark")) %>% 
+  select(year, country, lifeExp) %>% 
+  spread(country, lifeExp)
+  
+a2 %>% 
+    kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+Scatterplot life expectancy of one country against that of another
+<br>
+-To do this we keep year as our x variable and assign our two y variables as two seperate layers of geom_points
+<br>
+-I also changed the axis title because the default was "Denmark"
+
+```{r}
+a2 %>% 
+  ggplot(aes(year)) + 
+  geom_point(aes(y=Denmark, colour="Denmark")) + 
+  geom_point(aes(y=Sweden, colour="Sweden")) +
+  labs(y= "Life Expectancy", title="Life Expectancy Over Time for Denmark and Sweden") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+An alternative way to do this would be to ignore the spread function and simply plot from the original gapminder dataset after filtering for the two countries
+
+```{r}
+gapminder %>% 
+  filter(country %in% c("Sweden","Denmark")) %>% 
+  ggplot(aes(x=year, y=lifeExp)) + geom_point(aes(colour=country))
+```
+
+***
+### Reshaping and Aggregation
+#### Activity 3: Mean of life expectancy by continent by year, reshape to have own row per year, one variable per continent
+Our first task is to use dplyr functions so all we have remaining is the continent, year and mean life expectancy columns.  To do this we first group by continent and year, and then use the summarize function to find the mean life expectancy by year by continent.
+
+```{r}
+a3 <- gapminder %>%
+  group_by(continent, year) %>% 
+  summarize(meanLE=mean(lifeExp))
+a3
+```
+Next we want to spread the continent and meanLE data so we only have a single line for each year and multiple columns for each continent
+
+```{r}
+a3 %>% 
+  spread(continent, meanLE) %>% 
+   kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+Plot mean life expectancy by year by continent
+<br>
+-One way to do this is to introduce each column (the continents) as their own y function (in this case, geom_line). This plot relatively easy to make with the data in this shape.
+
+```{r}
+a3 %>% 
+  spread(continent, meanLE) %>% 
+  ggplot(aes(year)) +
+  geom_line(aes(y=Africa, colour="Africa"))+
+  geom_line(aes(y=Americas, colour="Americas"))+
+  geom_line(aes(y=Asia, colour="Asia"))+
+  geom_line(aes(y=Europe, colour="Europe"))+
+  geom_line(aes(y=Oceania, colour="Oceania"))+
+  labs(y="mean life expectancy", title= "Mean Life Expectancy by Continent Over Time")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+All other plot types(boxplot, columns, lines, scatter) were easier to make with the data before it was reshaped because it originally has a long format, that is, few y variables, which is ideal for using ggplot. Below I tried densityplots and scatterplots with the wide data.  They either did not work or involved extra lines of code to define each column as a seperate Y variable or each plot had to be made seperately to specify each continent as it's own x variable.
+
+```{r}
+a3 %>%
+spread(continent, meanLE) %>% 
+  ggplot(aes(Africa)) +
+  geom_density()
+```
+
+```{r}
+a3 %>% 
+  spread(continent, meanLE) %>% 
+  ggplot(aes(year)) +
+  geom_point(aes(y=Africa, colour="Africa"))+
+  geom_point(aes(y=Americas, colour="Americas"))+
+  geom_point(aes(y=Asia, colour="Asia"))+
+  geom_point(aes(y=Europe, colour="Europe"))+
+  geom_point(aes(y=Oceania, colour="Oceania"))+
+  labs(y="mean life expectancy", title= "Mean Life Expectancy by Continent Over Time")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+  
+The lineplot of above is made more easily below with the data before it was reshaped. Also, having plots that are facetted by continent would be easier to make before the data was spread by continent.
+
+```{r}
+a3 %>% 
+  ggplot(aes(year, meanLE)) +
+  geom_line(aes(colour=continent)) +
+  labs(y="mean life expectancy", title= "Mean Life Expectancy by Continent Over Time")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+ 
+```{r}
+a3 %>% 
+  ggplot(aes(year, meanLE)) +
+  facet_wrap(~continent) + 
+  geom_line(aes(colour=continent)) +
+  labs(y="mean life expectancy", title= "Mean Life Expectancy by Continent Over Time")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+ It was also easier to make a density plot using the long format of the data
+ 
+```{r}
+a3 %>% 
+   ggplot(aes(x=meanLE, colour=continent)) +
+  geom_density() +
+  labs(x="mean life expectancy", title= "Mean Life Expectancy by Continent")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+ 
+ Doing this exercise has really hit home that the shape of your data really matters when it comes to plotting.  Doing this exercise I have observed (and had it confirmed elsewhere on my searchs on how to work with wide datasets) that long dataframes work the best and that gather and melt are the best options if the data is wide and you want to plot it with ease.
+ 
+***
+### Join, Merge, Lookup
+### Activity #1: Create a second data frame, complementary to Gapminder. Join.
+
+I decided to challenge myself and make a new dataframe of world capitals.  I used [this](http://rstudio-pubs-static.s3.amazonaws.com/266868_db7146207ddf418a9813947bf6cb5fbf.html) website for guidance on how to make a new dataframe. To do this I installed and loaded the libraries for rvest(easily harvest web pages) and curl (web client for downloads).  Then I used curl to 'scrape' the data off the website below including capitals, latitude and longitude. I made a new dataframe for this data called df1 and displayed the head of the table.
+
+```{r}
+web_content <- read_html(curl('http://www.lab.lmnixon.org/4th/worldcapitals.html', handle = new_handle("useragent" = "Safari/11.0")))
+df1 <- (web_content %>% html_table(header=T))[[1]][1:200,]
+head(df1)
+```
+
+```{r}
+head(gapminder)
+```
+
+Viewing the two dataframes we can see that they both have the column 'country' in common but one is capitalized while the other is not.  To correct this we will use the mutate function on our newly created dataframe so the column header matches the corresponding column in gapminder
+
+```{r}
+df2<- df1 %>% 
+mutate(country = Country) %>% 
+  select(country, Capital, Latitude, Longitude)
+head(df2)
+```
+
+Now I will try different joins of gapminder with the newly created df2.
+<br>
+**Anti-join**
+<br>
+The first is anti-join, which will drop any countries in gapminder that match with df2.  From this we can see there are several countries in gapminder that either are not in df2 or the naming is incorrect, for example the two Congo countries, Japan, the two Koreas and several others.
+<br>
+<br>
+Reversing the anti-join we can see there are 87 countries in df2 that do not have a match in gapminder due to being excluded or, more likely, mismatching naming conventions.
+
+```{r}
+anti_join(gapminder,df2, by="country")
+```
+```{r}
+head(anti_join(df2,gapminder, by="country"))
+```
+
+**Semi-join**
+<br>
+Semi-join of gapminder with df2 results in a table where there is a row for every row of gapminder that matched with df2. This results in over 1300 rows of matches
+<br>
+<br>
+Semi-join of df2 with gapminder results in 113 rows, where only rows that match for 'country' in gapminder are included.
+
+```{r}
+head(semi_join(gapminder, df2, by="country"))
+```
+```{r}
+head(semi_join(df2, gapminder, by="country"))
+```
+
+**Inner-join**
+<br>
+Inner join of gapminder and df2 returns all rows where gapminder has matching values in df2 and includes columns from both dataframes.
+<br>
+<br>
+Inner join of df2 with gapminder returns the exact same table as the inner join above, but with a different order of columns.
+
+```{r}
+inner_join(gapminder, df2, by="country")
+```
+```{r}
+inner_join(df2, gapminder, by="country")
+```
+
+**Left-join**
+<br>
+Left join of gapminder and df2 returns all rows from gapminder and all columns from gapminder and df2. Rows in gapminder with no match in df2 have NA values for the new columns.For example, Comoros has no capital, longitute or latitute listed.
+<br>
+<br>
+Left joining of df2 with gapminder returns all rows from df2 and all columns from df2 and gapminder.  Rows in df2 with no match in gapminder have NA values for the new columns. For example, American Samoa and Andorra have NA values for continent, year etc.
+
+```{r}
+head(left_join(gapminder, df2, group="country"))
+```
+
+```{r}
+head(left_join(df2, gapminder, by="country"))
+```
+
+**Right-join**
+<br>
+Right join of gapminder and df2 returns all rows from df2 and all columns from gapminder and df2.Rows in gapminder with no match in df2 have NA values for the new columns.For example, Armenia is only in df2 and is included with NA for all the gapminder columns.
+<br>
+<br>
+Right joining of df2 with gapminder returns all rows from gapminder and all columns from df2 and gapminder.  Rows in gapminder with no match in df2 have NA values for the new columns. For example, the Republic of Congo has NA for capital, longituge and latitude.
+
+```{r}
+head(right_join(gapminder, df2, group="country"))
+```
+```{r}
+head(right_join(df2, gapminder, group="country"))
+```
+
+**Full-Join**
+<br>
+Full join of gapminder and df2 returns all rows and all columns for both x and y. Value that don't match appear as NA.  Full join yields the same results regardless of dataframe order in the function, although the column order may be different.
+
+```{r}
+full_join(gapminder, df2, by="country")
+```
+
+### Activity #3: Explore merge and match
+*Merge*
+
+```{r}
+merge(gapminder, df2)
+```
+
+Looking at the table from the merge function, I noticed that it simply discarded any rows that did not match from df2 into gapminder. For example, the country of Iran exists both in df2 and gapminder but in df2 it is listed as Iran(Islamic Republic of). Therefore all rows with NA appear to be discarded and do not appear.  We should also test this by switching the order of the dataframes to make sure that does not affect the function. When comparing to the joins, the merge function appears to be similar to inner join.  Both return all rows from x where there is a matching value in y and columns of x and y.
+
+```{r}
+merge(df2, gapminder)
+```
+This merged table appears to be identical to the one above.
+<br>
+<br>
+*Match*
+```{r}
+match(4, c(2,3,5,4), nomatch=NA_integer_, incomparables = NULL)
+```
+The concept of match is that it returns a vector of the position of first occurrence of vector 1 in vector 2.  If no element of vector 1 exists in vector, NA is returned.
+
+```{r}
+match("", gapminder, nomatch=NA_integer_, incomparables = NULL)
+```
+
