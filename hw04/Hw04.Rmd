@@ -25,6 +25,7 @@ library(xml2)
 I opted to do several tasks of both the reshaping and join prompts
 
 ***
+
 ### Reshaping and Aggregation
 #### Activity #1: Make your own cheatsheet
 
@@ -44,7 +45,7 @@ b= name of stacked columns that becomes a variable
 <br>
 ... = Items that are included or excluded from the reshape
 <br>
-<br>
+
 *Demos*
 <br>
 New Dataframe
@@ -223,7 +224,7 @@ a3 %>%
  
 ***
 ### Join, Merge, Lookup
-### Activity #1: Create a second data frame, complementary to Gapminder. Join.
+#### Activity #1: Create a second data frame, complementary to Gapminder. Join.
 
 I decided to challenge myself and make a new dataframe of world capitals.  I used [this](http://rstudio-pubs-static.s3.amazonaws.com/266868_db7146207ddf418a9813947bf6cb5fbf.html) website for guidance on how to make a new dataframe. To do this I installed and loaded the libraries for rvest(easily harvest web pages) and curl (web client for downloads).  Then I used curl to 'scrape' the data off the website below including capitals, latitude and longitude. I made a new dataframe for this data called df1 and displayed the head of the table.
 
@@ -256,7 +257,7 @@ The first is anti-join, which will drop any countries in gapminder that match wi
 Reversing the anti-join we can see there are 87 countries in df2 that do not have a match in gapminder due to being excluded or, more likely, mismatching naming conventions.
 
 ```{r}
-anti_join(gapminder,df2, by="country")
+head(anti_join(gapminder,df2, by="country"))
 ```
 ```{r}
 head(anti_join(df2,gapminder, by="country"))
@@ -284,10 +285,10 @@ Inner join of gapminder and df2 returns all rows where gapminder has matching va
 Inner join of df2 with gapminder returns the exact same table as the inner join above, but with a different order of columns.
 
 ```{r}
-inner_join(gapminder, df2, by="country")
+head(inner_join(gapminder, df2, by="country"))
 ```
 ```{r}
-inner_join(df2, gapminder, by="country")
+head(inner_join(df2, gapminder, by="country"))
 ```
 
 **Left-join**
@@ -324,20 +325,20 @@ head(right_join(df2, gapminder, group="country"))
 Full join of gapminder and df2 returns all rows and all columns for both x and y. Value that don't match appear as NA.  Full join yields the same results regardless of dataframe order in the function, although the column order may be different.
 
 ```{r}
-full_join(gapminder, df2, by="country")
+head(full_join(gapminder, df2, by="country"))
 ```
 
 ### Activity #3: Explore merge and match
 *Merge*
 
 ```{r}
-merge(gapminder, df2)
+head(merge(gapminder, df2))
 ```
 
 Looking at the table from the merge function, I noticed that it simply discarded any rows that did not match from df2 into gapminder. For example, the country of Iran exists both in df2 and gapminder but in df2 it is listed as Iran(Islamic Republic of). Therefore all rows with NA appear to be discarded and do not appear.  We should also test this by switching the order of the dataframes to make sure that does not affect the function. When comparing to the joins, the merge function appears to be similar to inner join.  Both return all rows from x where there is a matching value in y and columns of x and y.
 
 ```{r}
-merge(df2, gapminder)
+head(merge(df2, gapminder))
 ```
 This merged table appears to be identical to the one above.
 <br>
