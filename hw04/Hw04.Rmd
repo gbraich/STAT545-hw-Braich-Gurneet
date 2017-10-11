@@ -93,6 +93,7 @@ df %>% gather(test, scores, -c(name)) %>%
    kable("html") %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
+
 ***
 
 ### Reshaping and Aggregation
