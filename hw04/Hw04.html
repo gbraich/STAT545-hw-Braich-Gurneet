@@ -1286,7 +1286,7 @@ head(df2)</code></pre>
 ## 4 American Samoa        Pago Pago   14.16S   170.43W
 ## 5        Andorra Andorra la Vella   42.31N    01.32E
 ## 6         Angola           Luanda   08.50S    13.15E</code></pre>
-<p>Now I will try different joins of gapminder with the newly created df2. <br> <strong>Anti-join</strong> <br> The first is anti-join, which will drop any countries in gapminder that match with df2. From this we can see there are several countries in gapminder that either are not in df2 or the naming is incorrect, for example the two Congo countries, Japan, the two Koreas and several others. <br> <br> Reversing the anti-join we can see there are 87 countries in df2 that do not have a match in gapminder due to being excluded or, more likely, mismatching naming conventions.</p>
+<p>Now I will try different joins of gapminder with the newly created df2. <br> <br> <strong>Anti-join</strong> <br> The first is anti-join, which will drop any countries in gapminder that match with df2. From this we can see there are several countries in gapminder that either are not in df2 or the naming is incorrect, for example the two Congo countries, Japan, the two Koreas and several others. <br> <br> Reversing the anti-join we can see there are 87 countries in df2 that do not have a match in gapminder due to being excluded or, more likely, mismatching naming conventions.</p>
 <pre class="r"><code>head(anti_join(gapminder,df2, by=&quot;country&quot;))</code></pre>
 <pre><code>## Warning: Column `country` joining factor and character vector, coercing
 ## into character vector</code></pre>
@@ -1482,8 +1482,32 @@ head(df2)</code></pre>
 <pre class="r"><code>match(4, c(2,3,5,4), nomatch=NA_integer_, incomparables = NULL)</code></pre>
 <pre><code>## [1] 4</code></pre>
 <p>The concept of match is that it returns a vector of the position of first occurrence of vector 1 in vector 2. If no element of vector 1 exists in vector, NA is returned.</p>
-<pre class="r"><code>match(&quot;&quot;, gapminder, nomatch=NA_integer_, incomparables = NULL)</code></pre>
+<pre class="r"><code>match(6, c(2,3,5,4), nomatch=NA_integer_, incomparables = NULL)</code></pre>
 <pre><code>## [1] NA</code></pre>
+<p>The function match looks for where elements of x match those of y. It only reports the first occurence of each element of x and NA for no match. This can be demonstrated using slightly more complicated vectors.</p>
+<pre class="r"><code>xx &lt;-c(1,4,5,80)
+yy &lt;- c(2, 5, 7, 6, 9, 5, 4, 14, 2, 3, 8, 11, 1, 13)
+match(xx, yy)</code></pre>
+<pre><code>## [1] 13  7  2 NA</code></pre>
+<p>In the above match we can see that first element of x (the number 1) matches at position 13, 4 matches at position 7, five matches at position 2 (even though there is a second 5 in the yy vector is not considered) and there is not match in 80. We can compare this to joins and merges <br> Below we can see that merging the two created a new table where every value of x is matched to each value of y.</p>
+<pre class="r"><code>head(merge(xx,yy))</code></pre>
+<pre><code>##    x y
+## 1  1 2
+## 2  4 2
+## 3  5 2
+## 4 80 2
+## 5  1 5
+## 6  4 5</code></pre>
+<hr />
+<div id="reflections" class="section level4">
+<h4>Reflections</h4>
+<ul>
+<li>I thought this assignment was interesting with some new challenges</li>
+<li>I found it really helpful to visualize all the different types of joins</li>
+<li>I also enjoyed trying the curl function to scrape data from a table on a website</li>
+<li>It was interesting to try out the merge and match functions and I hope to explore them more in the future</li>
+</ul>
+</div>
 </div>
 
 
