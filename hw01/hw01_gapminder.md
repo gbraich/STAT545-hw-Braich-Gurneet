@@ -7,6 +7,8 @@
     ## Loading tidyverse: purrr
     ## Loading tidyverse: dplyr
 
+    ## Warning: package 'dplyr' was built under R version 3.4.2
+
     ## Conflicts with tidy packages ----------------------------------------------
 
     ## filter(): dplyr, stats
@@ -185,3 +187,5 @@
     ## `geom_smooth()` using method = 'loess'
 
 ![](hw01_gapminder_files/figure-markdown_strict/unnamed-chunk-24-4.png)
+
+update
