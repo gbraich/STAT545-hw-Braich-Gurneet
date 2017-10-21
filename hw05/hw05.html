@@ -124,14 +124,25 @@ $(document).ready(function () {
 </div>
 
 
-<div id="table-of-contents" class="section level1">
-<h1>Table of Contents</h1>
-<p><a href="#Factor%20Management">Factor Management</a></p>
-<p><a href="#File%20I/O">File I/O</a></p>
-<p><a href="#Visualization%20and%20design">Visualization and Design</a></p>
-<p><a href="#Writing%20Figures%20to%20File">Write Figures to File</a></p>
-<p><a href="#Clean%20Up%20Your%20Repo">Clean Up Your Repo!</a></p>
-<p><a href="#But%20I%20Want%20To%20Do%20More">But I Want To Do More</a></p>
+<div id="table-of-contents" class="section level2">
+<h2>Table of Contents</h2>
+<div id="factor-management" class="section level3">
+<h3>Factor Management</h3>
+</div>
+<div id="file-io" class="section level3">
+<h3>File I/O</h3>
+</div>
+<div id="visualization-and-design" class="section level3">
+<h3>Visualization and Design</h3>
+</div>
+<div id="write-figures-to-file" class="section level3">
+<h3>Write Figures to File</h3>
+</div>
+<div id="clean-up-your-repo" class="section level3">
+<h3>Clean Up Your Repo!</h3>
+</div>
+<div id="but-i-want-to-do-more" class="section level3">
+<h3>But I Want To Do More</h3>
 <p>For this assignment I chose to focus on the gapminder dataset.</p>
 <p>I began with loading the libraries that I would need:</p>
 <pre class="r"><code>library(tidyr)
@@ -143,7 +154,8 @@ library(tidyverse)
 library(forcats)
 library(plyr)</code></pre>
 <hr />
-<div id="factor-management" class="section level3">
+</div>
+<div id="factor-management-1" class="section level3">
 <h3>Factor Management</h3>
 <div id="task-1-drop-oceania" class="section level4">
 <h4>Task 1-Drop Oceania</h4>
@@ -452,7 +464,7 @@ United States
 </div>
 </div>
 </div>
-<div id="file-io" class="section level3">
+<div id="file-io-1" class="section level3">
 <h3>File I/O</h3>
 <div id="rds" class="section level4">
 <h4>RDS</h4>
@@ -474,7 +486,7 @@ gap_life_gdp %&gt;% levels() %&gt;% head()</code></pre>
 <hr />
 </div>
 </div>
-<div id="visualization-and-design" class="section level3">
+<div id="visualization-and-design-1" class="section level3">
 <h3>Visualization and design</h3>
 <p><a href="#top">Back to top</a></p>
 <p>Create a new figure, juxtapose first attempt</p>
@@ -639,13 +651,13 @@ p</code></pre>
 <hr />
 </div>
 </div>
-<div id="clean-up-your-repo" class="section level3">
+<div id="clean-up-your-repo-1" class="section level3">
 <h3>Clean Up Your Repo</h3>
 <p><a href="#top">Back to top</a></p>
 <p>-Created a table of contents in the top-level <a href="https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/README.md">README</a> <br> -Renamed homework assignments for future reference <br> -Included a description of what was covered in each assignment <br> -Removed all downstream stuff and re-rendered everything <br></p>
 <hr />
 </div>
-<div id="but-i-want-to-do-more" class="section level3">
+<div id="but-i-want-to-do-more-1" class="section level3">
 <h3>But I want to do more!</h3>
 <p><a href="#top">Back to top</a></p>
 <p>Gapminder version <br> I decided to go about this task in two ways: one way by using <code>join</code> and the second by using the <code>ifelse</code> functions <br> Try 1 I elected to add information on the leader of each nation and whether they were male or female. One approach to this is to first filter gapminder to include just the countries of interest. Then create a new dataframe that includes the countries of interest and the gender of the countries’ leader. I used semi-join join this with filtered gapminder tibble. I then reordered the levels of factors using fct_infreq so the most frequent factor would appear first.</p>
