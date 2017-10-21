@@ -126,7 +126,12 @@ $(document).ready(function () {
 
 <div id="table-of-contents" class="section level1">
 <h1>Table of Contents</h1>
-<p><a href="#Factor%20Management">Factor Management</a> <br> <a href="#File%20I/O">File I/O</a> <br> <a href="#Visualization%20and%20design">Visualization and Design</a> <br> <a href="#Writing%20Figures%20to%20File">Write Figures to File</a> <br> <a href="#Clean%20Up%20Your%20Repo">Clean Up Your Repo!</a> <br> <a href="#But%20I%20Want%20To%20Do%20More">But I Want To Do More</a> <br></p>
+<p><a href="#Factor%20Management">Factor Management</a></p>
+<p><a href="#File%20I/O">File I/O</a></p>
+<p><a href="#Visualization%20and%20design">Visualization and Design</a></p>
+<p><a href="#Writing%20Figures%20to%20File">Write Figures to File</a></p>
+<p><a href="#Clean%20Up%20Your%20Repo">Clean Up Your Repo!</a></p>
+<p><a href="#But%20I%20Want%20To%20Do%20More">But I Want To Do More</a></p>
 <p>For this assignment I chose to focus on the gapminder dataset.</p>
 <p>I began with loading the libraries that I would need:</p>
 <pre class="r"><code>library(tidyr)
@@ -610,11 +615,11 @@ p</code></pre>
 <pre class="r"><code>ggsave(&quot;my_plotscale2.pdf&quot;, width=12, height=6, scale=2, p)
 ggsave(&quot;my_plotscale1.pdf&quot;, width=12, height=6, scale=1, p)
 ggsave(&quot;my_plot.png&quot;,width=12, height=6, p)</code></pre>
-<p>Scaling to <a href="path">2</a> makes the pdf look really weird to let’s scale try the other way. Scaling it to <a href="path">0.5</a> makes the figures quite small compared to the legends and other text.</p>
+<p>Scaling to <a href="https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/my_plotscale2.pdf">2</a> makes the pdf look really weird to let’s scale try the other way. Scaling it to <a href="https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/my_plotscale0.5.pdf">0.5</a> makes the figures quite small compared to the legends and other text.</p>
 <pre class="r"><code>ggsave(&quot;my_plotscale0.5.pdf&quot;, width=12, height=6, scale=0.5, p)</code></pre>
 <pre class="r"><code>ggsave(&quot;my_plot.pdf&quot;, width=12, height=6, scale=2, p)</code></pre>
 <p>Expliciting stating which plot can be important because if plot= ? is not stated, ggsave will default to the last plot displayed.</p>
-<p>For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don’t want to save. As you can see, <a href="path">the last plot display is saved</a></p>
+<p>For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don’t want to save. As you can see, <a href="https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/noexplicitname_plot.pdf">the last plot display is saved</a></p>
 <pre class="r"><code>p&lt;- ggplot(gap2, aes(x=year, y=log10(gdpPercap))) + 
   facet_wrap(~continent) + 
   geom_boxplot(aes(group=year, colour=continent)) + 
@@ -637,7 +642,7 @@ p</code></pre>
 <div id="clean-up-your-repo" class="section level3">
 <h3>Clean Up Your Repo</h3>
 <p><a href="#top">Back to top</a></p>
-<p>-Created a table of contents in the top-level <a href="path">README</a> <br> -Renamed homework assignments for future reference <br> -Included a description of what was covered in each assignment <br> -Removed all downstream stuff and re-rendered everything <br></p>
+<p>-Created a table of contents in the top-level <a href="https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/README.md">README</a> <br> -Renamed homework assignments for future reference <br> -Included a description of what was covered in each assignment <br> -Removed all downstream stuff and re-rendered everything <br></p>
 <hr />
 </div>
 <div id="but-i-want-to-do-more" class="section level3">

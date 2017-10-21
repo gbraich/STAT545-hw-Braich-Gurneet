@@ -9,17 +9,17 @@ output:
 # Table of Contents
 
 [Factor Management](#Factor Management)
-<br>
+
 [File I/O](#File I/O)
-<br>
+
 [Visualization and Design](#Visualization and design)
-<br>
+
 [Write Figures to File](#Writing Figures to File)
-<br>
+
 [Clean Up Your Repo!](#Clean Up Your Repo)
-<br>
+
 [But I Want To Do More](#But I Want To Do More)
-<br>
+
 
 For this assignment I chose to focus on the gapminder dataset.
 
@@ -263,7 +263,7 @@ ggsave("my_plotscale2.pdf", width=12, height=6, scale=2, p)
 ggsave("my_plotscale1.pdf", width=12, height=6, scale=1, p)
 ggsave("my_plot.png",width=12, height=6, p)
 ```
-Scaling to [2](path) makes the pdf look really weird to let's scale try the other way.  Scaling it to [0.5](path) makes the figures quite small compared to the legends and other text.
+Scaling to [2](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/my_plotscale2.pdf) makes the pdf look really weird to let's scale try the other way.  Scaling it to [0.5](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/my_plotscale0.5.pdf) makes the figures quite small compared to the legends and other text.
 ```{r}
 ggsave("my_plotscale0.5.pdf", width=12, height=6, scale=0.5, p)
 ```
@@ -274,7 +274,7 @@ ggsave("my_plot.pdf", width=12, height=6, scale=2, p)
 
 Expliciting stating which plot can be important because if plot= ? is not stated, ggsave will default to the last plot displayed.
 
-For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don't want to save.  As you can see, [the last plot display is saved](path)
+For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don't want to save.  As you can see, [the last plot display is saved](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/noexplicitname_plot.pdf)
 
 ```{r}
 p<- ggplot(gap2, aes(x=year, y=log10(gdpPercap))) + 
@@ -297,7 +297,7 @@ ggsave("noexplicitname_plot.pdf")
 
 <a href="#top">Back to top</a>
 
--Created a table of contents in the top-level [README](path)
+-Created a table of contents in the top-level [README](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/README.md)
 <br>
 -Renamed homework assignments for future reference
 <br>
