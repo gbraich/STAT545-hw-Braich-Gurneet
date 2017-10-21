@@ -726,7 +726,7 @@ John
 <h3>Reshaping and Aggregation</h3>
 <div id="activity-2-make-a-tibble-of-one-row-per-year-and-columns-of-life-expectancy-for-two-or-more-countries" class="section level4">
 <h4>Activity 2: Make a tibble of one row per year and columns of life expectancy for two or more countries</h4>
-<p>To do this we will need to use the filter function to filter only two countries of interest, the select function to select only the columns we are interested in and then use the spread function to make columns for the life expectancies of the two countries by year</p>
+<p>To do this we will need to use the filter function to filter only two countries of interest, the select function to select only the columns we are interested in and then use the spread function to make columns for the life expectancies of the two countries by year.</p>
 <pre class="r"><code>a2 &lt;- gapminder %&gt;% 
   filter(country %in% c(&quot;Sweden&quot;,&quot;Denmark&quot;)) %&gt;% 
   select(year, country, lifeExp) %&gt;% 

@@ -100,7 +100,7 @@ df %>% gather(test, scores, -c(name)) %>%
 
 #### Activity 2: Make a tibble of one row per year and columns of life expectancy for two or more countries
 
-To do this we will need to use the filter function to filter only two countries of interest, the select function to select only the columns we are interested in and then use the spread function to make columns for the life expectancies of the two countries by year
+To do this we will need to use the filter function to filter only two countries of interest, the select function to select only the columns we are interested in and then use the spread function to make columns for the life expectancies of the two countries by year.
 
 ```{r}
 a2 <- gapminder %>% 
