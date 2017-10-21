@@ -274,7 +274,7 @@ ggsave("my_plot.pdf", width=12, height=6, scale=2, p)
 
 Expliciting stating which plot can be important because if plot= ? is not stated, ggsave will default to the last plot displayed.
 
-For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don't want to save.  As you can see, [the last plot display is saved](https://github.com/gbraich/STAT545-hw-Braich-Gurneet/blob/master/hw05/hw05_figures_tables/noexplicitname_plot.png)
+For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don't want to save.  As you can see, the last plot diplayed is save, as seen below in the embedded plot !['the last plot display is saved'](noexplicitname_plot.png)
 
 ```{r}
 p<- ggplot(gap2, aes(x=year, y=log10(gdpPercap))) + 
