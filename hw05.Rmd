@@ -1,0 +1,398 @@
+---
+title: "Hw05"
+author: "Gb"
+date: '2017-10-17'
+output: 
+  html_document: 
+    keep_md: yes
+---
+# Table of Contents
+
+[Factor Management](#Factor Management)
+<br>
+[File I/O](#File I/O)
+<br>
+[Visualization and Design](#Visualization and design)
+<br>
+[Write Figures to File](#Writing Figures to File)
+<br>
+[Clean Up Your Repo!](#Clean Up Your Repo)
+<br>
+[But I Want To Do More](#But I Want To Do More)
+<br>
+
+For this assignment I chose to focus on the gapminder dataset.
+
+I began with loading the libraries that I would need:
+```{r results='hide', message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(gapminder)
+library(tidyverse)
+library(forcats)
+library(plyr)
+```
+***
+### Factor Management
+#### Task 1-Drop Oceania
+
+<a href="#top">Back to top</a>
+
+To do this let's first take a glimpse of the dataset
+
+```{r}
+glimpse(gapminder)
+str(gapminder$continent)
+fct_count(gapminder$continent)
+```
+
+One way to do this would be to create a list of continents we wish to keep and filter gapminder to include only these continents. Another way would be to subset gapminder to include all continents excluding Oceania.  However, after doing either of these methods if we look at the newly created dataframe nooc_gap we can see that there are still 5 levels for continents whereas we would like to only have 4.
+
+```{r}
+no_OC <-c("Asia", "Africa", "Europe", "Americas")
+nooc_gap <-gapminder %>% 
+  filter(continent %in% no_OC)
+str(nooc_gap)
+nlevels(nooc_gap$continent)
+```
+
+To get rid of the extra level we need to use the forcats function `fct_drop`
+
+```{r}
+nooc_gap$continent %>% 
+  fct_drop() %>% 
+  levels()
+```
+
+or we can use the base function `droplevels` to operate on all factors in the dataframe
+
+```{r}
+nooc_gap_dropped <- nooc_gap %>%
+  droplevels()
+nlevels(nooc_gap_dropped$continent)
+```
+
+Now we only have 4 levels of factors in continents left.  We can confirm this by taking a glimpse of our new dataframe `nooc_gap_dropped`. From the structure we can see that we dropped a level from continent and the 2 countries under Oceania were dropped from country, leaving only 140 from the original 142.  We can also check this with `fct_count`.
+
+```{r}
+str(nooc_gap_dropped)
+fct_count(nooc_gap_dropped$continent)
+```
+
+#### Task 2- Reorder the levels of country or continent
+
+Based on a principled summary of one of the quantitative variables.
+<br>
+For this task I decided to look at maximum life expectancy for every country and re-order them based on highest to lowest
+
+```{r}
+f1<- fct_reorder(gapminder$country, gapminder$lifeExp, max, .desc=TRUE) 
+  f1 %>% levels() %>% head()
+```
+ We can also visualize this data on a scatterplot
+```{r}
+plot1 <- gapminder %>% 
+  ggplot(aes(x=lifeExp, y=fct_reorder(country, lifeExp, max, .desc=TRUE))) + geom_point() + labs(x="life expectancy", y="countries")
+plot1
+```
+
+As we can see from the plot above, the countries with the highest life expectancies on the plot are those we saw at the head of the table just previous (Japan, Hong Kong etc.)
+
+#### Task 3-Common Part
+##### Practice writing to file and reading back in
+
+Let's practice writing out the dataframe we created in Task#1, `nooc_gap_dropped`
+<br>
+To do this let's use the readr `write_csv()` to get a comma delimited file.  I chose readr over the base function because it has nicer default behaviour, althought this doesn't matter for data that is as clean as Gapminder
+```{r}
+readr::write_csv(nooc_gap_dropped, "nooc_gap_dropped.csv")
+```
+
+To take a look at the exported csv file I used `readr::read_csv` and looked at the head of the table.   We can see that column specification is attempted. While country and continent are factors in the original tibble, the imported tibble reads them as characters. This can be easily fixed with the `mutate` function.
+
+```{r}
+head(readr::read_csv("nooc_gap_dropped.csv"))
+```
+```{r}
+str(nooc_gap_dropped)
+```
+
+Reading the imported csv we can see that dropping of the Oceania factor is retained.  Because there was no reordering of levels in Task 1, we can not judge if reordered factors were retained upon import.  We do know from the class lecture and notes that using `saveRDS` and `readRDS` are the best way to save and re-import data to retain factor levels upon re-import.
+
+```{r}
+csv_nooc <- readr::read_csv("nooc_gap_dropped.csv")
+fct_count(csv_nooc$continent)
+```
+
+##### Characterize the (derived) data before and after your factor re-leveling
+For this I used the factor re-leveling from task 2 which ordered countries by maximum life expectancy
+<br>
+
+##### Explore the effects of arrange
+Unfactored data
+<br>
+Using arrange on this data we see the descending order
+
+```{r}
+dervieddata <-gapminder %>% 
+  group_by(country) %>% 
+  select(country, lifeExp) %>% 
+ arrange(desc(lifeExp))
+  head(dervieddata) %>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+ 
+ Plotting the derived data after arrange
+ 
+```{r}
+dervieddata %>% 
+  ggplot(aes(lifeExp, country)) + geom_point()
+```
+
+After looking at plots of the un-leveled data after using the arrange function we can see that it doesn't have any affect on the figure
+
+```{r}
+max_LE <- fct_reorder(gapminder$country, gapminder$lifeExp, max, .desc=TRUE) %>% 
+  levels()
+max_LE %>% head()
+str(max_LE)
+```
+
+##### Effects of re-ordering a factor and factor reordering coupled with arrange
+Let's reorder the factors of some newly derived data and couple it with arrange.
+
+After making our new dataframe NAFTA_gap we can see that the current levels are alphabetical.  We can then use `fct_relevel` to change the order of the levels.
+
+```{r}
+NAFTA_gap <- gapminder %>%
+  filter(country %in% c("Canada","United States", "Mexico", "Brazil"), year %in% c(2007)) %>% 
+  select(country, year, pop) %>% 
+  droplevels()
+NAFTA_gap %>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+```{r}
+levels(NAFTA_gap$country)
+NAFTA_gap %>% ggplot(aes(pop,country)) +geom_point()
+ggplot(NAFTA_gap, aes(x=pop, y=fct_reorder(country, pop))) + geom_point()
+NAFTA_gap %>% 
+  arrange(desc(pop)) %>% 
+  ggplot(aes(x=pop, y=fct_reorder(country, pop))) + geom_point()
+```
+Despite using arrange() for descending population the figure still showed the order from the fct_reorder, that is, lowest population first
+
+***
+### File I/O
+#### RDS
+
+<a href="#top">Back to top</a>
+
+As I already provided an example of `write csv` and `read csv` above, I decided to tackle rds.
+
+First I filtered the gapminder data for lowest gdp and changed the factors to make them in ascending order
+
+```{r}
+gap_life_gdp <- fct_reorder(gapminder$country, gapminder$gdpPercap, min)
+gap_life_gdp %>% levels() %>% head()
+```
+
+Next I saved the newly created dataframe to file in the rds format
+
+```{r}
+saveRDS(gap_life_gdp, "gap_life_gdp.rds")
+```
+
+Now we want to reimport this file and see what survived.
+
+```{r}
+gap_life_gdp <- readRDS("gap_life_gdp.rds")
+gap_life_gdp %>% levels() %>% head()
+```
+Here we can see that our reordered country factor levels survived export and import!
+
+***
+### Visualization and design
+
+<a href="#top">Back to top</a>
+
+Create a new figure, juxtapose first attempt
+
+For this challenge I decided to take a figure I made back for homework #2
+
+```{r}
+ggplot(gapminder, aes(x=year, y=gdpPercap)) + geom_point()
+```
+
+To make this figure look nicer I did the following: changed the y scale to log 10, changed from points to boxplots (to be more informative), faceted by continent, updated the axis and figure titles, added a better colour scale using brewer and changed the angle of the x axis markers to be less crowded.  To try something fun I decided to include an line for the world mean for every year of the plot so we can see how the continents do over time compared to the average.  For this I first needed to add a new variable to the database, grouped by year, that I called meangdp. I had some issues adding this new line to the legend, and after much troubleshooting and help from [this thread](https://stackoverflow.com/questions/26756358/how-to-include-in-legend-symbol-of-mean-in-boxplot-with-ggplot), I managed to add a second legend for my averaged line.  I found fiddling with the legend to be really helpful in learning how to manage with multiple lines/points/etc on the same plot which I'm sure will be helpful in the future!
+
+```{r}
+gap2<- gapminder %>%
+  group_by(year) %>% 
+  select(continent,year, gdpPercap) %>% 
+  mutate(meangdp=mean(gdpPercap))
+head(gap2) %>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+p<- ggplot(gap2, aes(x=year, y=log10(gdpPercap))) + 
+  facet_wrap(~continent) + 
+  geom_boxplot(aes(group=year, colour=continent)) + 
+  scale_colour_brewer(palette="Dark2") +
+  theme(axis.text.x=element_text (angle=270)) +
+  labs(y="Log GDP Per Capita", x= "Year", title="Gdp Per Capita Over Time") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_line(aes(x=year, y=log10(meangdp))) +
+   geom_point(aes(shape = "Mean Gdp Per Capita by Year"), alpha = 0) +
+  guides(shape=guide_legend(title=NULL, override.aes = list(alpha = 1)))
+p
+```
+
+***
+### Writing Figures to File
+##### Use ggsave
+
+<a href="#top">Back to top</a>
+
+I saved my previous plot to the variable `p` for this exercise for in a png and pdf format.  I also played around with the width/height, text scaling, formats, and explicit provisions.
+
+```{r}
+ggsave("my_plotscale2.pdf", width=12, height=6, scale=2, p)
+ggsave("my_plotscale1.pdf", width=12, height=6, scale=1, p)
+ggsave("my_plot.png",width=12, height=6, p)
+```
+Scaling to [2](path) makes the pdf look really weird to let's scale try the other way.  Scaling it to [0.5](path) makes the figures quite small compared to the legends and other text.
+```{r}
+ggsave("my_plotscale0.5.pdf", width=12, height=6, scale=0.5, p)
+```
+
+```{r}
+ggsave("my_plot.pdf", width=12, height=6, scale=2, p)
+```
+
+Expliciting stating which plot can be important because if plot= ? is not stated, ggsave will default to the last plot displayed.
+
+For example, if we bring up the last two plots we worked with from above, and use ggsave it will save the last plot displayed, even though that is the rudimentary plot from hw2 that we don't want to save.  As you can see, [the last plot display is saved](path)
+
+```{r}
+p<- ggplot(gap2, aes(x=year, y=log10(gdpPercap))) + 
+  facet_wrap(~continent) + 
+  geom_boxplot(aes(group=year, colour=continent)) + 
+  scale_colour_brewer(palette="Dark2") +
+  theme(axis.text.x=element_text (angle=270)) +
+  labs(y="Log GDP Per Capita", x= "Year", title="Gdp Per Capita Over Time") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_line(aes(x=year, y=log10(meangdp))) +
+   geom_point(aes(shape = "Mean Gdp Per Capita by Year"), alpha = 0) +
+  guides(shape=guide_legend(title=NULL, override.aes = list(alpha = 1)))
+p
+ggplot(gapminder, aes(x=year, y=gdpPercap)) + geom_point()
+ggsave("noexplicitname_plot.pdf")
+```
+
+***
+### Clean Up Your Repo
+
+<a href="#top">Back to top</a>
+
+-Created a table of contents in the top-level [README](path)
+<br>
+-Renamed homework assignments for future reference
+<br>
+-Included a description of what was covered in each assignment
+<br>
+-Removed all downstream stuff and re-rendered everything
+<br>
+
+***
+### But I want to do more!
+
+<a href="#top">Back to top</a>
+
+Gapminder version
+<br>
+I decided to go about this task in two ways: one way by using `join` and the second by using the `ifelse` functions
+<br>
+Try 1
+I elected to add information on the leader of each nation and whether they were male or female. One approach to this is to first filter gapminder to include just the countries of interest.  Then create a new dataframe that includes the countries of interest and the gender of the countries' leader.  I used semi-join join this with filtered gapminder tibble.  I then reordered the levels of factors using fct_infreq so the most frequent factor would appear first.  
+
+```{r}
+leaders <- gapminder %>% 
+  filter(country %in% c("Germany", "Japan", "Chile", "Switzerland", "Canada", "China")) %>% 
+  select(country)
+head(leaders)%>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+country = c("Germany", "Chile", "Japan", "Canada", "Switzerland", "China")
+leadergender = c("female", "female", "male", "male", "male", "male")
+df= data.frame(country, leadergender)
+```
+
+```{r}
+leaders2 <- semi_join(df, leaders, by="country")
+leaders2 %>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+Let's see the structure of this new dataframe
+
+```{r}
+str(leaders2)
+levels(leaders2$leadergender)
+```
+
+Now let's reorder these levels for frequency
+
+```{r}
+leaders3 <- leaders2$leadergender %>% 
+  fct_infreq()
+leaders3 %>% 
+  levels()
+```
+
+
+From this we can see that the factors have been reordered in terms of highest frequency (male) instead of alphabetically.
+<br>
+<br>
+Try 2
+Filter to only the countries we are interested, drop extra levels, create a new variable (languages), map exisiting country factor levels to new levels
+
+```{r}
+languages <- gapminder %>% 
+  filter(country %in% c("Germany", "Japan", "Chile", "Austria", "Canada", "Argentina"), year %in% c(2007)) %>% 
+  select(country) %>% 
+  droplevels()
+languages %>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+str(languages)
+```
+
+We are going to make a new variable called languages and map our countries to it.  We can see that after mapping our langauges we get an alphabetical list.  After converting our newly created column to factors we can reorder the factors from alphabetical to frequency.
+
+```{r}
+languages$language <- ifelse(languages$country == "Argentina", "Spanish",
+                             ifelse(languages$country == "Chile", "Spanish",
+                             ifelse(languages$country == "Canada", "English",
+                             ifelse(languages$country == "Austria", "German",
+                                    ifelse(languages$country == "Germany", "German",
+                             ifelse(languages$country == "Japan", "Japanese", NA))))))
+lang2 <-languages %>% 
+  mutate(langfactor=as.factor(language)) %>% 
+  select(country, langfactor)
+lang2 %>% kable("html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+str(lang2)
+lang2$langfactor %>% 
+  fct_infreq()
+```
+
+
+
+
+
+
+
