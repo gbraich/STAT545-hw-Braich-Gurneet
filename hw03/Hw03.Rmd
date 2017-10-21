@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(gapminder)
 ```
 
 
@@ -16,9 +17,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-```{r}
-library(gapminder)
-```
 ```{r}
 library(knitr)
 ```
